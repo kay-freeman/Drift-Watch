@@ -2,7 +2,9 @@ import fs from 'fs';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-// 1. The Schema (Source of Truth)
+// SAFETY VALVE: Set to true to only report drift without fixing it
+const DRY_RUN = false;
+
 const RuleSchema = z.object({
   id: z.string(),
   port: z.number(),
@@ -14,42 +16,43 @@ const InfrastructureSchema = z.object({
   rules: z.array(RuleSchema)
 });
 
-function detectAndRemediate() {
+function auditEnvironment() {
   try {
-    // Read Desired State (YAML)
     const yamlFile = fs.readFileSync('./infrastructure.yaml', 'utf8');
     const desiredState = InfrastructureSchema.parse(YAML.parse(yamlFile));
 
-    // Read Live State (JSON)
     const jsonFile = fs.readFileSync('./live-state.json', 'utf8');
-    const liveState = JSON.parse(jsonFile);
+    let liveState = JSON.parse(jsonFile);
 
-    console.log(`--- Monitoring Resource: ${desiredState.resource_name} ---`);
+    console.log(`--- Audit Started: ${desiredState.resource_name} ---`);
+    console.log(`--- Mode: ${DRY_RUN ? 'DRY RUN (No changes)' : 'LIVE REMEDIATION'} ---`);
 
     const desiredIds = desiredState.rules.map(r => r.id);
-
-    // Identify drifting rules
     const driftingRules = liveState.active_rules.filter(
       (liveRule: any) => !desiredIds.includes(liveRule.id)
     );
 
     if (driftingRules.length > 0) {
-      console.error("🚨 DRIFT DETECTED!");
+      console.error(`🚨 DRIFT: Found ${driftingRules.length} unauthorized rules.`);
       
-      console.log("\n--- Suggested Remediation ---");
-      driftingRules.forEach((rule: any) => {
-        console.log(`[ACTION REQUIRED] Remove unauthorized rule: ${rule.id}`);
-        // This simulates generating a real CLI command for a cloud provider
-        console.log(`👉 Run command: gcloud compute firewall-rules delete ${rule.id}`);
-      });
-      console.log("-----------------------------\n");
+      if (DRY_RUN) {
+        console.log("🔍 [DRY RUN] Would remove the following rules:");
+        driftingRules.forEach((r: any) => console.log(`  - ${r.id}`));
+      } else {
+        console.log("🛠  Auto-remediating... Synchronizing live state to policy.");
+        liveState.active_rules = liveState.active_rules.filter(
+          (liveRule: any) => desiredIds.includes(liveRule.id)
+        );
+        fs.writeFileSync('./live-state.json', JSON.stringify(liveState, null, 2));
+        console.log("✅ Remediation Complete.");
+      }
     } else {
-      console.log("✅ Live state matches policy. No drift detected.");
+      console.log("✅ No drift detected. Environment is secure.");
     }
 
   } catch (error) {
-    console.error("❌ Error running audit:", error);
+    console.error("❌ Audit failed:", error);
   }
 }
 
-detectAndRemediate();
+auditEnvironment();
