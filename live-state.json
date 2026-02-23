@@ -1,22 +1,13 @@
 {
-  "production-db-firewall": {
-    "active_rules": [
-      {
-        "id": "web-to-db",
-        "port": 5432,
-        "protocol": "tcp"
-      }
-    ]
-  },
   "web-frontend-lb": {
     "active_rules": [
       {
-        "id": "http-inbound",
+        "id": "allow-http",
         "port": 80,
         "protocol": "tcp"
       },
       {
-        "id": "https-inbound",
+        "id": "allow-https",
         "port": 443,
         "protocol": "tcp"
       }

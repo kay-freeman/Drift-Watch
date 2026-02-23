@@ -1,0 +1,5 @@
+"id","timestamp","resource","status","details"
+3,"2026-02-23 23:23:19","web-frontend-lb","DRIFT","Extra: unauthorized-access, Extra: allow-http, Extra: allow-https, Missing: http-inbound, Missing: https-inbound"
+4,"2026-02-23 23:23:19","web-frontend-lb","DRIFT","Extra: http-inbound, Extra: https-inbound, Missing: allow-http, Missing: allow-https"
+1,"2026-02-23 23:23:17","web-frontend-lb","DRIFT","Extra: unauthorized-access, Extra: allow-http, Extra: allow-https, Missing: http-inbound, Missing: https-inbound"
+2,"2026-02-23 23:23:17","web-frontend-lb","DRIFT","Extra: unauthorized-access"
