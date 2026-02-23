@@ -17,20 +17,7 @@ In production environments, manual changes—often referred to as "hotfixes"—a
 - Runtime: Node.js
 
 ## Usage Instructions
+
 1. Install dependencies:
 ```bash
 npm install
-Execute the validator:
-
-Bash
-npx ts-node index.ts
-
----
-
-### Sync the professional look to GitHub
-Run these commands in your VS Code terminal to update the appearance:
-
-```bash
-git add README.md
-git commit -m "Format usage instructions as code blocks for better readability"
-git push
