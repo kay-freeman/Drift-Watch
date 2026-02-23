@@ -2,7 +2,6 @@ import fs from 'fs';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-// Check terminal arguments for the --fix flag
 const args = process.argv.slice(2);
 const IS_FIX_MODE = args.includes('--fix');
 
@@ -27,7 +26,7 @@ function logEvent(message: string) {
 function auditEnvironment() {
   try {
     if (!fs.existsSync('./infrastructure.yaml') || !fs.existsSync('./live-state.json')) {
-      throw new Error("Missing configuration files. Ensure infrastructure.yaml and live-state.json exist.");
+      throw new Error("Missing configuration files.");
     }
 
     const yamlFile = fs.readFileSync('./infrastructure.yaml', 'utf8');
@@ -36,35 +35,44 @@ function auditEnvironment() {
     const jsonFile = fs.readFileSync('./live-state.json', 'utf8');
     let liveState = JSON.parse(jsonFile);
 
-    logEvent(`--- Audit Started: ${desiredState.resource_name} ---`);
-    logEvent(`Mode: ${IS_FIX_MODE ? 'LIVE REMEDIATION' : 'DRY RUN (Read-Only)'}`);
+    console.clear();
+    logEvent(`--- DriftWatch Audit: ${desiredState.resource_name} ---`);
+    logEvent(`Mode: ${IS_FIX_MODE ? 'LIVE REMEDIATION' : 'DRY RUN'}`);
 
     const desiredIds = desiredState.rules.map(r => r.id);
+    
+    // Build a status report for the table
+    const report = liveState.active_rules.map((rule: any) => ({
+      Rule_ID: rule.id,
+      Port: rule.port,
+      Status: desiredIds.includes(rule.id) ? '✅ AUTHORIZED' : '🚨 UNAUTHORIZED'
+    }));
+
+    console.table(report);
+
     const driftingRules = liveState.active_rules.filter(
       (liveRule: any) => !desiredIds.includes(liveRule.id)
     );
 
     if (driftingRules.length > 0) {
-      logEvent(`🚨 DRIFT: Found ${driftingRules.length} unauthorized rules.`);
+      logEvent(`Found ${driftingRules.length} security violations.`);
       
-      if (!IS_FIX_MODE) {
-        logEvent("🔍 [DRY RUN] No changes made. Use '--fix' to apply changes.");
-        driftingRules.forEach((r: any) => logEvent(`   -> Potential removal: ${r.id}`));
-      } else {
-        logEvent("🛠  Applying Fixes... Removing unauthorized rules.");
+      if (IS_FIX_MODE) {
+        logEvent("🛠  Fixing drift...");
         liveState.active_rules = liveState.active_rules.filter(
           (liveRule: any) => desiredIds.includes(liveRule.id)
         );
         fs.writeFileSync('./live-state.json', JSON.stringify(liveState, null, 2));
-        logEvent("✅ Remediation Complete. Live state is now clean.");
+        logEvent("✅ Environment Restored.");
+      } else {
+        logEvent("🔍 Use '--fix' to remove unauthorized rules.");
       }
     } else {
-      logEvent("✅ No drift detected. Environment is secure.");
+      logEvent("✅ System is compliant.");
     }
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    logEvent(`❌ FATAL ERROR: ${errorMessage}`);
+    logEvent(`❌ FATAL ERROR: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
