@@ -18,6 +18,19 @@ In production environments, manual changes—often referred to as "hotfixes"—a
 
 ## Usage Instructions
 1. Install dependencies:
-   npm install
-2. Execute the validator:
-   npx ts-node index.ts
+```bash
+npm install
+Execute the validator:
+
+Bash
+npx ts-node index.ts
+
+---
+
+### Sync the professional look to GitHub
+Run these commands in your VS Code terminal to update the appearance:
+
+```bash
+git add README.md
+git commit -m "Format usage instructions as code blocks for better readability"
+git push
