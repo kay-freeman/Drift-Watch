@@ -27,7 +27,8 @@ The demo allows you to:
 * Formatted Reporting: Terminal based dashboard using tables for high visibility.
 * CLI Arguments: Support for --fix flag to toggle between Dry Run and Remediation.
 * Historical Logging: Persistent SQLite database storage for long term compliance tracking.
-* Audit History: Dedicated --history flag to view past audit performance and trends directly from the database.
+* Audit History: Dedicated --history flag to view past audit performance and trends.
+* CSV Export: Automated reporting via --export flag to generate timestamped CSV audit logs.
 
 ## Technical Stack
 * Language: TypeScript
@@ -72,6 +73,10 @@ View Audit History (Database Logs):
 
     npx ts-node index.ts --history
 
+Export Audit History (CSV):
+
+    npx ts-node index.ts --export
+
 Clear Audit History:
 
     npx ts-node index.ts --clear
@@ -103,11 +108,11 @@ All policies must follow this structure:
 * ✅ Phase 10: Automation Script: Created shell wrapper for continuous interval auditing.
 * ✅ Phase 11: Summary Reporting: Added global footer with total issue counts.
 
-### Data & Persistence (In Progress)
+### Data & Persistence (Completed)
 * ✅ Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
 * ✅ Phase 13: History CLI: Implemented --history flag for trend analysis.
 * ✅ Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
-* 🔄 Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
+* ✅ Phase 15: Export Functionality: Support for exporting audit history to CSV via --export.
 
 ### Engineering Excellence (Upcoming)
 * ⬜ Phase 16: Unit Testing: Implement Jest tests for the drift detection logic.

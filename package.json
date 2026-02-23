@@ -20,6 +20,7 @@
   "dependencies": {
     "console-table-printer": "^2.12.1",
     "js-yaml": "^4.1.0",
+    "json2csv": "^6.0.0-alpha.2",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "zod": "^3.22.4"

@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { Table } from 'console-table-printer';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
+import { Parser } from 'json2csv'; // New Import
 
 // --- Types & Schemas ---
 
@@ -62,12 +63,33 @@ async function runAudit() {
   const isFixMode = process.argv.includes('--fix');
   const isHistoryMode = process.argv.includes('--history');
   const isClearMode = process.argv.includes('--clear');
+  const isExportMode = process.argv.includes('--export'); // New Flag
 
   const db = await setupDatabase();
 
   if (isClearMode) {
     await db.run('DELETE FROM audit_logs');
     console.log('✅ Audit history cleared.');
+    return;
+  }
+
+  // --- NEW EXPORT LOGIC ---
+  if (isExportMode) {
+    const logs = await db.all('SELECT * FROM audit_logs ORDER BY timestamp DESC');
+    if (logs.length === 0) {
+      console.log('❌ No logs found to export.');
+      return;
+    }
+
+    try {
+      const parser = new Parser();
+      const csv = parser.parse(logs);
+      const filename = `audit_export_${Date.now()}.csv`;
+      fs.writeFileSync(filename, csv);
+      console.log(`✅ Audit history successfully exported to: ${filename}`);
+    } catch (err) {
+      console.error('❌ Failed to export CSV:', err);
+    }
     return;
   }
 
