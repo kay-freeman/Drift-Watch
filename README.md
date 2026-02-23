@@ -9,9 +9,9 @@ In production environments, manual changes frequently referred to as "hotfixes" 
 * **Policy as Code**: Infrastructure requirements are defined using standardized YAML syntax.
 * **Schema Enforcement**: Utilizes Zod for strict type validation of ports and protocols.
 * **Drift Detection**: Real-time comparison between Desired vs. Live state.
-* **Dry Run Mode**: Ability to audit and report drift without applying changes.
-* **Auto-Remediation**: Optional synchronization to remove unauthorized rules and restore policy.
-* **Audit Logging**: Maintains a persistent `audit.log` file for historical compliance tracking.
+* **CLI Arguments**: Support for `--fix` flag to toggle between Dry Run and Remediation.
+* **Auto-Remediation**: Programmatic synchronization to restore policy state.
+* **Audit Logging**: Maintains a persistent `audit.log` for historical compliance tracking.
 
 ## Technical Stack
 * **Language**: TypeScript
@@ -22,6 +22,5 @@ In production environments, manual changes frequently referred to as "hotfixes" 
 ## Getting Started
 
 ### 1. Installation
-Install the necessary dependencies:
 ```bash
 npm install
