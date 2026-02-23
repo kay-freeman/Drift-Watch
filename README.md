@@ -1,6 +1,6 @@
 # DriftWatch
 
-DriftWatch is a configuration auditing tool designed to detect and automatically remediate discrepancies between defined infrastructure policies and live environment states.
+DriftWatch is a configuration auditing tool designed to detect and automatically remediate discrepancies between defined infrastructure policies and live environment states. It provides a programmatic way to enforce infrastructure standards and maintain visibility into configuration drift.
 
 ## Problem Statement
 In production environments, manual changes frequently referred to as "hotfixes" are often applied directly to resources without being reflected in the version-controlled configuration. This leads to configuration drift, making infrastructure difficult to replicate, audit, and secure.
@@ -65,6 +65,6 @@ Project Roadmap
 
 [x] Phase 4: Auto-Remediation: Support for automated fixes with CLI flag control.
 
-[x] Phase 5: Audit Logging: Persistent tracking of all system actions.
+[x] Phase 5: Audit Logging: Persistent tracking of all system actions for compliance.
 
 [x] Phase 6: Visual Reporting: Terminal dashboard with tabular data display.
