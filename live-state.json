@@ -1,0 +1,15 @@
+{
+    "resource_name": "production-db-firewall",
+    "active_rules": [
+      {
+        "id": "web-to-db",
+        "port": 5432,
+        "protocol": "tcp"
+      },
+      {
+        "id": "unauthorized-access",
+        "port": 9999,
+        "protocol": "tcp"
+      }
+    ]
+  }

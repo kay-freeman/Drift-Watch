@@ -2,7 +2,7 @@ import fs from 'fs';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-// 1. The Safety Inspector (Schema)
+// 1. The Schema (Source of Truth)
 const RuleSchema = z.object({
   id: z.string(),
   port: z.number(),
@@ -14,29 +14,39 @@ const InfrastructureSchema = z.object({
   rules: z.array(RuleSchema)
 });
 
-// 2. The Logic to read and check the file
-function checkInfrastructure() {
+function detectDrift() {
   try {
-    // Read the actual file
-    const fileContents = fs.readFileSync('./infrastructure.yaml', 'utf8');
-    
-    // Convert YAML text to a JS Object
-    const data = YAML.parse(fileContents);
-    
-    // Validate the data against our rules
-    const validated = InfrastructureSchema.parse(data);
-    
-    console.log("✅ Audit Complete: The 'Desired State' is valid.");
-    console.log(`Checking resource: ${validated.resource_name}`);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.error("❌ Audit Failed! Structure mismatch:");
-      console.error(error.errors.map(e => ` - ${e.path.join('.')}: ${e.message}`).join('\n'));
+    // Read Desired State (YAML)
+    const yamlFile = fs.readFileSync('./infrastructure.yaml', 'utf8');
+    const desiredState = InfrastructureSchema.parse(YAML.parse(yamlFile));
+
+    // Read Live State (JSON)
+    const jsonFile = fs.readFileSync('./live-state.json', 'utf8');
+    const liveState = JSON.parse(jsonFile);
+
+    console.log(`--- Monitoring Resource: ${desiredState.resource_name} ---`);
+
+    // Create sets of IDs for quick comparison
+    const desiredIds = desiredState.rules.map(r => r.id);
+    const liveIds = liveState.active_rules.map((r: any) => r.id);
+
+    // Find rules in Live State that are NOT in our Desired State (The Drift)
+    const driftingRules = liveState.active_rules.filter(
+      (liveRule: any) => !desiredIds.includes(liveRule.id)
+    );
+
+    if (driftingRules.length > 0) {
+      console.error("🚨 DRIFT DETECTED!");
+      driftingRules.forEach((rule: any) => {
+        console.error(` > Unauthorized rule found: ${rule.id} on port ${rule.port}`);
+      });
     } else {
-      console.error("❌ Audit Failed! An unexpected error occurred:");
-      console.error(error);
+      console.log("✅ Live state matches policy. No drift detected.");
     }
+
+  } catch (error) {
+    console.error("❌ Error running audit:", error);
   }
 }
 
-checkInfrastructure();
+detectDrift();
