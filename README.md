@@ -45,6 +45,10 @@ Organize your project structure to support the multi policy engine:
 
 ### 3. Usage
 
+Interactive Demo (See it in Action):
+
+    npm run demo
+
 Manual Audit (Dry Run):
 
     npx ts-node index.ts
@@ -72,9 +76,10 @@ All policies must follow this structure:
 
 ## Project Roadmap
 
-### Core Engine (Completed)
+### Core Engine (In Progress)
 * ✅ Phase 1: Policy Validation: Ensure YAML configurations are schema compliant.
 * ✅ Phase 2: State Simulation: Created mock data for live environment testing.
+* 🔄 Phase 2.5: Interactive Demo Mode: Create a "one-click" simulation script.
 * ✅ Phase 3: Drift Detection: Logic implemented to flag discrepancies.
 * ✅ Phase 4: Auto Remediation: Support for automated fixes with CLI flag control.
 * ✅ Phase 5: Audit Logging: Persistent tracking of all system actions for compliance.
@@ -91,7 +96,7 @@ All policies must follow this structure:
 * ✅ Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
 * ✅ Phase 13: History CLI: Implemented --history flag for trend analysis.
 * ✅ Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
-* 🔄 Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
+* ⬜ Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
 
 ### Engineering Excellence (Upcoming)
 * ⬜ Phase 16: Unit Testing: Implement Jest tests for the drift detection logic.
