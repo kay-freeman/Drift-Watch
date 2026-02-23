@@ -35,6 +35,7 @@ The demo allows you to:
 * Validation Framework: Zod
 * Configuration Format: YAML (Policy) / JSON (Live State)
 * Runtime: Node.js
+* License: MIT
 
 ## Getting Started
 
