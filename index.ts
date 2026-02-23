@@ -45,6 +45,7 @@ function runAudit() {
 
   const files = fs.readdirSync(policiesDir).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
   let driftExists = false;
+  let totalIssues = 0;
 
   files.forEach(file => {
     try {
@@ -65,21 +66,31 @@ function runAudit() {
       }
 
       const active = liveData[resource].active_rules;
-      const drift = active.filter((live: any) => !desired.some(p => p.id === live.id));
 
-      if (drift.length === 0) {
+      const extra = active.filter((live: any) => !desired.some(p => p.id === live.id));
+      const missing = desired.filter((p: any) => !active.some(live => live.id === p.id));
+
+      if (extra.length === 0 && missing.length === 0) {
         table.push([resource, '✅ OK', 'Matches Policy', 'None']);
       } else {
         driftExists = true;
-        const driftList = drift.map((r: any) => `${r.id} (${r.port}/${r.protocol})`).join(', ');
+        totalIssues += (extra.length + missing.length);
         
+        let details = [];
+        if (extra.length > 0) details.push(`Extra: ${extra.map(r => r.id).join(', ')}`);
+        if (missing.length > 0) details.push(`Missing: ${missing.map(r => r.id).join(', ')}`);
+        
+        const driftDetails = details.join(' | ');
+
         if (isFixMode) {
-          drift.forEach((r: any) => logAction(`REMEDIATED: Removed ${r.id} from ${resource}`));
-          liveData[resource].active_rules = active.filter((live: any) => desired.some(p => p.id === live.id));
-          table.push([resource, '🔧 FIXED', driftList, 'REMOVED']);
+          extra.forEach((r: any) => logAction(`REMEDIATED: Removed ${r.id} from ${resource}`));
+          missing.forEach((r: any) => logAction(`REMEDIATED: Restored missing rule ${r.id} to ${resource}`));
+          liveData[resource].active_rules = [...desired];
+          table.push([resource, '🔧 FIXED', driftDetails, 'SYNCED']);
         } else {
-          drift.forEach((r: any) => logAction(`DRIFT DETECTED: ${resource} has unauthorized rule ${r.id}`));
-          table.push([resource, '⚠️  DRIFT', driftList, 'REPORTED']);
+          extra.forEach((r: any) => logAction(`DRIFT (EXTRA): ${resource} has unauthorized rule ${r.id}`));
+          missing.forEach((r: any) => logAction(`DRIFT (MISSING): ${resource} is missing rule ${r.id}`));
+          table.push([resource, '⚠️  DRIFT', driftDetails, 'REPORTED']);
         }
       }
 
@@ -88,16 +99,23 @@ function runAudit() {
     }
   });
 
-  // Render Output
   console.log(`\nDRIFTWATCH AUDIT REPORT - ${new Date().toLocaleString()}`);
   console.log(`MODE: ${isFixMode ? 'REMEDIATION' : 'DRY RUN'}\n`);
   console.log(table.toString());
 
+  // Summary Footer
+  console.log(`\n------------------------------------------`);
+  console.log(`SUMMARY:`);
+  console.log(`Total Resources Audited: ${files.length}`);
+  console.log(`Total Drift Issues Found: ${totalIssues}`);
+  console.log(`Status: ${totalIssues === 0 ? 'COMPLIANT' : 'NON-COMPLIANT'}`);
+  console.log(`------------------------------------------\n`);
+
   if (isFixMode && driftExists) {
     fs.writeFileSync(liveStatePath, JSON.stringify(liveData, null, 2));
-    console.log(`\n✅ Live state synchronized successfully.\n`);
+    console.log(`✅ Live state synchronized successfully.\n`);
   } else if (driftExists) {
-    console.log(`\n💡 Tip: Use --fix to remediate detected drift.\n`);
+    console.log(`💡 Tip: Use --fix to automatically add/remove rules to match policy.\n`);
   }
 }
 
