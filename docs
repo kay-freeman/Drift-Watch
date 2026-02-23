@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriftWatch | Infrastructure Integrity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --accent: #58a6ff;
+            --text: #c9d1d9;
+            --neon-green: #3fb950;
+            --neon-yellow: #d29922;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; padding: 60px 0; border-bottom: 1px solid #30363d; }
+        h1 { color: #fff; font-size: 3rem; margin: 0; letter-spacing: -1px; }
+        .tagline { color: var(--accent); font-size: 1.2rem; margin-top: 10px; }
+        
+        .terminal {
+            background: #000;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            border: 1px solid #30363d;
+        }
+        .terminal-header { color: #8b949e; margin-bottom: 15px; font-size: 0.8rem; border-bottom: 1px solid #21262d; padding-bottom: 5px; }
+        .command { color: var(--neon-green); }
+        .output { color: #8b949e; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #30363d; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card i { color: var(--accent); font-size: 1.5rem; margin-bottom: 15px; }
+        .card h3 { margin: 0 0 10px 0; color: #fff; }
+
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; background: #238636; color: white; margin-bottom: 10px; }
+        
+        footer { text-align: center; padding: 40px; color: #8b949e; font-size: 0.9rem; border-top: 1px solid #30363d; }
+        .btn { background: var(--accent); color: #000; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="badge">v1.0.0 Stable</div>
+        <h1>DriftWatch</h1>
+        <p class="tagline">Infrastructure Configuration Auditing & Auto-Remediation</p>
+        <a href="https://github.com/kay-freeman/drift-watch" class="btn"><i class="fab fa-github"></i> View on GitHub</a>
+    </header>
+
+    <div class="terminal">
+        <div class="terminal-header">KD-Thomas ~ drift-watch — bash</div>
+        <div><span class="command">$</span> npm run demo</div>
+        <div class="output">🚀 DriftWatch: The Ultimate Interactive Experience</div>
+        <div class="output">--------------------------------------------------</div>
+        <div class="output">✅ System ready. Injecting Global Drift...</div>
+        <div class="output">⚠️  DRIFT DETECTED: [production-db-firewall]</div>
+        <div class="output">🛠️  REMEDIATING...</div>
+        <div class="output">✅ Environment Restored to Policy.</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <i class="fas fa-shield-halved"></i>
+            <h3>Policy as Code</h3>
+            <p>Define infrastructure requirements using industry-standard YAML schemas with Zod validation.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-microchip"></i>
+            <h3>Auto-Remediation</h3>
+            <p>Don't just detect drift—fix it. DriftWatch automatically repairs configuration mismatches.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-database"></i>
+            <h3>Audit Persistence</h3>
+            <p>Every change is logged to a SQLite database for long-term compliance tracking and trend analysis.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-file-export"></i>
+            <h3>Business Intelligence</h3>
+            <p>Export audit logs to CSV with a single command for stakeholder reporting and SOC visibility.</p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Kay Freeman. Released under MIT License.
+    </footer>
+</div>
+
+</body>
+</html>
