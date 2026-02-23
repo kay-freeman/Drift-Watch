@@ -28,3 +28,15 @@
 [2026-02-23T02:27:58.410Z] REMEDIATED: Removed rogue-database-query from production-db-firewall
 [2026-02-23T02:27:58.412Z] REMEDIATED: Removed backdoor-ssh from web-frontend-lb
 [2026-02-23T02:27:58.412Z] REMEDIATED: Removed unauthorized-api-hole from web-frontend-lb
+[2026-02-23T02:49:47.648Z] DRIFT (EXTRA): web-frontend-lb has unauthorized rule http-inbound
+[2026-02-23T02:49:47.649Z] DRIFT (EXTRA): web-frontend-lb has unauthorized rule https-inbound
+[2026-02-23T02:49:47.649Z] DRIFT (MISSING): web-frontend-lb is missing rule allow-http
+[2026-02-23T02:49:47.649Z] DRIFT (MISSING): web-frontend-lb is missing rule allow-https
+[2026-02-23T02:54:13.843Z] DRIFT (EXTRA): web-frontend-lb has unauthorized rule http-inbound
+[2026-02-23T02:54:13.844Z] DRIFT (EXTRA): web-frontend-lb has unauthorized rule https-inbound
+[2026-02-23T02:54:13.844Z] DRIFT (MISSING): web-frontend-lb is missing rule allow-http
+[2026-02-23T02:54:13.844Z] DRIFT (MISSING): web-frontend-lb is missing rule allow-https
+[2026-02-23T02:54:48.504Z] DRIFT (EXTRA): web-frontend-lb has unauthorized rule http-inbound
+[2026-02-23T02:54:48.505Z] DRIFT (EXTRA): web-frontend-lb has unauthorized rule https-inbound
+[2026-02-23T02:54:48.506Z] DRIFT (MISSING): web-frontend-lb is missing rule allow-http
+[2026-02-23T02:54:48.506Z] DRIFT (MISSING): web-frontend-lb is missing rule allow-https

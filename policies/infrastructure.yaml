@@ -1,5 +1,8 @@
-resource_name: production-db-firewall
+resource_name: web-frontend-lb
 rules:
-  - id: web-to-db
-    port: 5432
+  - id: http-inbound
+    port: 80
+    protocol: tcp
+  - id: https-inbound
+    port: 443
     protocol: tcp
