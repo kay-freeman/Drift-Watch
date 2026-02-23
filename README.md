@@ -12,11 +12,12 @@ In production environments, manual changes frequently referred to as hotfixes ar
 * Drift Detection: Real time comparison between Desired vs. Live state.
 * Formatted Reporting: Terminal based dashboard using tables for high visibility.
 * CLI Arguments: Support for --fix flag to toggle between Dry Run and Remediation.
-* Auto Remediation: Programmatic synchronization to restore policy state.
-* Audit Logging: Maintains a persistent audit.log for historical compliance tracking.
+* Historical Logging: Persistent SQLite database storage for long term compliance tracking.
+* Audit History: Dedicated --history flag to view past audit performance and trends directly from the database.
 
 ## Technical Stack
 * Language: TypeScript
+* Database: SQLite3
 * Validation Framework: Zod
 * Configuration Format: YAML (Policy) / JSON (Live State)
 * Runtime: Node.js
@@ -24,7 +25,7 @@ In production environments, manual changes frequently referred to as hotfixes ar
 ## Getting Started
 
 ### 1. Installation
-Install the necessary dependencies to handle YAML parsing and TypeScript execution:
+Install the necessary dependencies to handle YAML parsing, database operations, and TypeScript execution:
 
     npm install
 
@@ -42,17 +43,6 @@ Organize your project structure to support the multi policy engine:
         port: 5432
         protocol: tcp
 
-**live-state.json** (The Simulated Reality)
-
-    {
-      "production-db-firewall": {
-        "active_rules": [
-          { "id": "web-to-db", "port": 5432, "protocol": "tcp" },
-          { "id": "unauthorized-access", "port": 9999, "protocol": "tcp" }
-        ]
-      }
-    }
-
 ### 3. Usage
 
 Manual Audit (Dry Run):
@@ -62,6 +52,10 @@ Manual Audit (Dry Run):
 Manual Fix (Remediation):
 
     npx ts-node index.ts --fix
+
+View Audit History (Database Logs):
+
+    npx ts-node index.ts --history
 
 Autopilot Mode (Continuous Monitoring):
 
@@ -85,3 +79,5 @@ All policies must follow this structure:
 * [x] Phase 9: Bidirectional Detection: Logic added to find both extra and missing rules.
 * [x] Phase 10: Automation Script: Created shell wrapper for continuous interval auditing.
 * [x] Phase 11: Summary Reporting: Added global footer with total issue counts.
+* [x] Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
+* [x] Phase 13: History CLI: Implemented --history flag for trend analysis.
