@@ -1,10 +1,25 @@
 {
-  "resource_name": "production-db-firewall",
-  "active_rules": [
-    {
-      "id": "web-to-db",
-      "port": 5432,
-      "protocol": "tcp"
-    }
-  ]
+  "production-db-firewall": {
+    "active_rules": [
+      {
+        "id": "web-to-db",
+        "port": 5432,
+        "protocol": "tcp"
+      }
+    ]
+  },
+  "web-frontend-lb": {
+    "active_rules": [
+      {
+        "id": "allow-http",
+        "port": 80,
+        "protocol": "tcp"
+      },
+      {
+        "id": "allow-https",
+        "port": 443,
+        "protocol": "tcp"
+      }
+    ]
+  }
 }

@@ -22,3 +22,9 @@
 [2026-02-23T01:49:16.691Z] --- DriftWatch Audit: production-db-firewall ---
 [2026-02-23T01:49:16.692Z] Mode: LIVE REMEDIATION
 [2026-02-23T01:49:16.693Z] ✅ System is compliant.
+[2026-02-23T02:27:39.153Z] DRIFT DETECTED: production-db-firewall has unauthorized rule rogue-database-query
+[2026-02-23T02:27:39.155Z] DRIFT DETECTED: web-frontend-lb has unauthorized rule backdoor-ssh
+[2026-02-23T02:27:39.155Z] DRIFT DETECTED: web-frontend-lb has unauthorized rule unauthorized-api-hole
+[2026-02-23T02:27:58.410Z] REMEDIATED: Removed rogue-database-query from production-db-firewall
+[2026-02-23T02:27:58.412Z] REMEDIATED: Removed backdoor-ssh from web-frontend-lb
+[2026-02-23T02:27:58.412Z] REMEDIATED: Removed unauthorized-api-hole from web-frontend-lb

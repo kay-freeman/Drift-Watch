@@ -1,8 +1,0 @@
-resource_name: "production-db-firewall"
-rules:
-  - id: "web-to-db"
-    port: 5432
-    protocol: "tcp"
-  - id: "admin-ssh"
-    port: 22
-    protocol: "tcp"
