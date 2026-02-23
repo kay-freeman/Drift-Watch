@@ -3,103 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriftWatch | Infrastructure Integrity</title>
+    <title>DriftWatch | Kay Freeman</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --bg: #0d1117;
-            --card-bg: #161b22;
-            --accent: #58a6ff;
-            --text: #c9d1d9;
-            --neon-green: #3fb950;
-            --neon-yellow: #d29922;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-        }
+        :root { --bg: #0d1117; --card-bg: #161b22; --accent: #58a6ff; --text: #c9d1d9; --neon-green: #3fb950; --neon-red: #f85149; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; line-height: 1.6; }
         .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-        header { text-align: center; padding: 60px 0; border-bottom: 1px solid #30363d; }
-        h1 { color: #fff; font-size: 3rem; margin: 0; letter-spacing: -1px; }
-        .tagline { color: var(--accent); font-size: 1.2rem; margin-top: 10px; }
         
-        .terminal {
-            background: #000;
-            border-radius: 6px;
-            padding: 20px;
-            margin: 40px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-            border: 1px solid #30363d;
-        }
-        .terminal-header { color: #8b949e; margin-bottom: 15px; font-size: 0.8rem; border-bottom: 1px solid #21262d; padding-bottom: 5px; }
-        .command { color: var(--neon-green); }
-        .output { color: #8b949e; }
+        header { text-align: center; padding-bottom: 40px; border-bottom: 1px solid #30363d; margin-bottom: 40px; }
+        h1 { margin: 0; font-size: 2.5rem; color: #fff; }
+        .author-tag { color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
 
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
-        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #30363d; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .card i { color: var(--accent); font-size: 1.5rem; margin-bottom: 15px; }
-        .card h3 { margin: 0 0 10px 0; color: #fff; }
-
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; background: #238636; color: white; margin-bottom: 10px; }
+        .status-bar { background: #21262d; padding: 20px; border-radius: 8px; border-left: 5px solid var(--accent); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .status-pill { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; background: var(--neon-green); color: #000; }
         
-        footer { text-align: center; padding: 40px; color: #8b949e; font-size: 0.9rem; border-top: 1px solid #30363d; }
-        .btn { background: var(--accent); color: #000; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #30363d; transition: border-color 0.3s; }
+        .card:hover { border-color: var(--accent); }
+        .card h3 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; }
+        
+        .timestamp { font-size: 0.85rem; color: #8b949e; margin-top: 5px; }
+        
+        footer { text-align: center; margin-top: 60px; padding: 30px; border-top: 1px solid #30363d; color: #8b949e; font-size: 0.9rem; }
+        .license-badge { border: 1px solid #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 10px; }
+        .btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <div class="author-tag">Lead Engineer: Kay Freeman</div>
+            <h1>DriftWatch</h1>
+            <p>Automated Infrastructure Compliance & Remediation</p>
+            <a href="https://github.com/kay-freeman/drift-watch" class="btn"><i class="fab fa-github"></i> Source Code</a>
+        </header>
 
-<div class="container">
-    <header>
-        <div class="badge">v1.0.0 Stable</div>
-        <h1>DriftWatch</h1>
-        <p class="tagline">Infrastructure Configuration Auditing & Auto-Remediation</p>
-        <a href="https://github.com/kay-freeman/drift-watch" class="btn"><i class="fab fa-github"></i> View on GitHub</a>
-    </header>
+        <div class="status-bar">
+            <div>
+                <h3 style="margin:0; color:#fff;">Live System Health</h3>
+                <div class="timestamp" id="last-updated">Last Audit: Loading from local data...</div>
+            </div>
+            <div id="status-display" class="status-pill">Awaiting Update</div>
+        </div>
 
-    <div class="terminal">
-        <div class="terminal-header">KD-Thomas ~ drift-watch — bash</div>
-        <div><span class="command">$</span> npm run demo</div>
-        <div class="output">🚀 DriftWatch: The Ultimate Interactive Experience</div>
-        <div class="output">--------------------------------------------------</div>
-        <div class="output">✅ System ready. Injecting Global Drift...</div>
-        <div class="output">⚠️  DRIFT DETECTED: [production-db-firewall]</div>
-        <div class="output">🛠️  REMEDIATING...</div>
-        <div class="output">✅ Environment Restored to Policy.</div>
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-shield-check" style="color: var(--neon-green)"></i> Active Policies</h3>
+                <p id="policy-count">--</p>
+                <small>Total infrastructure definitions currently enforced.</small>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-microscope" style="color: var(--accent)"></i> Open Drift</h3>
+                <p id="drift-count">--</p>
+                <small>Discrepancies found during the most recent audit cycle.</small>
+            </div>
+        </div>
+        
+        <footer>
+            &copy; 2026 <strong>Kay Freeman</strong> 
+            <span class="license-badge">MIT License</span>
+            <p style="margin-top:10px;">Built with TypeScript, Node.js, and SQLite</p>
+        </footer>
     </div>
 
-    <div class="grid">
-        <div class="card">
-            <i class="fas fa-shield-halved"></i>
-            <h3>Policy as Code</h3>
-            <p>Define infrastructure requirements using industry-standard YAML schemas with Zod validation.</p>
-        </div>
-        <div class="card">
-            <i class="fas fa-microchip"></i>
-            <h3>Auto-Remediation</h3>
-            <p>Don't just detect drift—fix it. DriftWatch automatically repairs configuration mismatches.</p>
-        </div>
-        <div class="card">
-            <i class="fas fa-database"></i>
-            <h3>Audit Persistence</h3>
-            <p>Every change is logged to a SQLite database for long-term compliance tracking and trend analysis.</p>
-        </div>
-        <div class="card">
-            <i class="fas fa-file-export"></i>
-            <h3>Business Intelligence</h3>
-            <p>Export audit logs to CSV with a single command for stakeholder reporting and SOC visibility.</p>
-        </div>
-    </div>
-
-    <footer>
-        &copy; 2026 Kay Freeman. Released under MIT License.
-    </footer>
-</div>
-
+    <script>
+        async function loadStatus() {
+            try {
+                // This fetches the summary.json generated by your CLI tool
+                const response = await fetch('./summary.json');
+                const data = await response.json();
+                
+                document.getElementById('last-updated').innerText = `Last Audit: ${data.timestamp}`;
+                document.getElementById('policy-count').innerText = `${data.policies} Policy Files`;
+                document.getElementById('drift-count').innerText = `${data.drifts} Issues Detected`;
+                
+                const pill = document.getElementById('status-display');
+                if (data.drifts > 0) {
+                    pill.innerText = 'Drift Detected';
+                    pill.style.background = 'var(--neon-red)';
+                } else {
+                    pill.innerText = 'System Compliant';
+                    pill.style.background = 'var(--neon-green)';
+                }
+            } catch (e) {
+                document.getElementById('last-updated').innerText = "Run CLI to sync live dashboard data.";
+                document.getElementById('status-display').innerText = "Offline";
+                document.getElementById('status-display').style.background = "#484f58";
+            }
+        }
+        loadStatus();
+    </script>
 </body>
 </html>

@@ -1,8 +1,8 @@
-resource_name: web-frontend-lb
+resource_name: "web-server"
 rules:
-  - id: allow-http
+  - id: "http-in"
     port: 80
-    protocol: tcp
-  - id: allow-https
+    protocol: "tcp"
+  - id: "https-in"
     port: 443
-    protocol: tcp
+    protocol: "tcp"

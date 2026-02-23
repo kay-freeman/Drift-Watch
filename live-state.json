@@ -1,16 +1,21 @@
 {
-  "web-frontend-lb": {
-    "active_rules": [
-      {
-        "id": "allow-http",
-        "port": 80,
-        "protocol": "tcp"
-      },
-      {
-        "id": "allow-https",
-        "port": 443,
-        "protocol": "tcp"
-      }
-    ]
-  }
+  "infrastructure": [
+    {
+      "id": "ssh-inbound",
+      "port": 22,
+      "protocol": "tcp"
+    }
+  ],
+  "web-server": [
+    {
+      "id": "http-in",
+      "port": 80,
+      "protocol": "tcp"
+    },
+    {
+      "id": "rogue-exploit",
+      "port": 666,
+      "protocol": "tcp"
+    }
+  ]
 }
