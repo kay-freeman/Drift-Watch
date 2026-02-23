@@ -11,12 +11,12 @@
   "web-frontend-lb": {
     "active_rules": [
       {
-        "id": "allow-http",
+        "id": "http-inbound",
         "port": 80,
         "protocol": "tcp"
       },
       {
-        "id": "allow-https",
+        "id": "https-inbound",
         "port": 443,
         "protocol": "tcp"
       }
