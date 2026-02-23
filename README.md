@@ -22,12 +22,41 @@ In production environments, manual changes frequently referred to as "hotfixes" 
 
 ## Getting Started
 
-### 1. Installation
+1. Installation
 Install the necessary dependencies to handle YAML parsing and TypeScript execution:
-```bash
+
+Bash
 npm install
 2. Setup Configuration
 Create the following files in your root directory to define your environment:
+
+infrastructure.yaml (Your Policy)
+
+YAML
+resource_name: production-db-firewall
+rules:
+  - id: web-to-db
+    port: 5432
+    protocol: tcp
+live-state.json (The Simulated Reality)
+
+JSON
+{
+  "resource_name": "production-db-firewall",
+  "active_rules": [
+    { "id": "web-to-db", "port": 5432, "protocol": "tcp" },
+    { "id": "unauthorized-access", "port": 9999, "protocol": "tcp" }
+  ]
+}
+3. Usage
+Audit only (Dry Run):
+
+Bash
+npx ts-node index.ts
+Audit and Fix (Remediation):
+
+Bash
+npx ts-node index.ts --fix
 
 infrastructure.yaml (Your Policy)
 
