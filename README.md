@@ -57,6 +57,10 @@ View Audit History (Database Logs):
 
     npx ts-node index.ts --history
 
+Clear Audit History:
+
+    npx ts-node index.ts --clear
+
 Autopilot Mode (Continuous Monitoring):
 
     ./watch.sh
@@ -86,7 +90,7 @@ All policies must follow this structure:
 ### Data & Persistence (In Progress)
 * [x] Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
 * [x] Phase 13: History CLI: Implemented --history flag for trend analysis.
-* [ ] Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
+* [x] Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
 * [ ] Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
 
 ### Engineering Excellence (Upcoming)

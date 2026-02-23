@@ -54,19 +54,38 @@ class DatabaseService {
     if (!this.db) return [];
     return await this.db.all('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 10');
   }
+
+  async clearHistory() {
+    if (!this.db) return;
+    await this.db.run('DELETE FROM audit_logs');
+    // Vacuum cleans up the unused space and resets the file size
+    await this.db.run('VACUUM');
+    console.log('✅ Audit history cleared successfully.');
+  }
 }
 
-// --- 3. Audit Engine ---
+// --- 3. Main Execution Engine ---
 async function run() {
   const dbService = new DatabaseService();
   await dbService.init();
 
   const isFixMode = process.argv.includes('--fix');
   const isHistoryMode = process.argv.includes('--history');
+  const isClearMode = process.argv.includes('--clear');
 
-  // --- History Mode Logic ---
+  // --- Maintenance Mode ---
+  if (isClearMode) {
+    await dbService.clearHistory();
+    process.exit(0);
+  }
+
+  // --- History Mode ---
   if (isHistoryMode) {
     const history = await dbService.getHistory();
+    if (history.length === 0) {
+      console.log('\nNo audit history found in database.\n');
+      process.exit(0);
+    }
     const historyTable = new Table({
       title: 'HISTORICAL AUDIT LOGS (Last 10)',
       columns: [
