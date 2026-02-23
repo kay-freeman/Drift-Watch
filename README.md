@@ -58,7 +58,7 @@ Audit and Fix (Remediation):
 Bash
 npx ts-node index.ts --fix
 
-#### Project Roadmap
+Project Roadmap
 [x] Phase 1: Policy Validation: Ensure YAML configurations are schema-compliant.
 
 [x] Phase 2: State Simulation: Created mock data for live environment testing.
