@@ -2,7 +2,7 @@ import fs from 'fs';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-// 1. This is our "Safety Inspector" (Schema)
+// 1. The Safety Inspector (Schema)
 const RuleSchema = z.object({
   id: z.string(),
   port: z.number(),
@@ -14,19 +14,29 @@ const InfrastructureSchema = z.object({
   rules: z.array(RuleSchema)
 });
 
-// 2. This function reads the file you just saved
+// 2. The Logic to read and check the file
 function checkInfrastructure() {
-  // Read the physical file
-  const fileContents = fs.readFileSync('./infrastructure.yaml', 'utf8');
-  
-  // Convert YAML text into a Javascript Object
-  const data = YAML.parse(fileContents);
-  
-  // Validate the data
-  const validated = InfrastructureSchema.parse(data);
-  
-  console.log("✅ Audit Complete: The 'Desired State' is valid.");
-  console.log(`Checking resource: ${validated.resource_name}`);
+  try {
+    // Read the actual file
+    const fileContents = fs.readFileSync('./infrastructure.yaml', 'utf8');
+    
+    // Convert YAML text to a JS Object
+    const data = YAML.parse(fileContents);
+    
+    // Validate the data against our rules
+    const validated = InfrastructureSchema.parse(data);
+    
+    console.log("✅ Audit Complete: The 'Desired State' is valid.");
+    console.log(`Checking resource: ${validated.resource_name}`);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error("❌ Audit Failed! Structure mismatch:");
+      console.error(error.errors.map(e => ` - ${e.path.join('.')}: ${e.message}`).join('\n'));
+    } else {
+      console.error("❌ Audit Failed! An unexpected error occurred:");
+      console.error(error);
+    }
+  }
 }
 
 checkInfrastructure();
