@@ -26,7 +26,7 @@ In production environments, manual changes frequently referred to as hotfixes ar
 ### 1. Installation
 Install the necessary dependencies to handle YAML parsing and TypeScript execution:
 
-npm install
+    npm install
 
 ### 2. Setup Configuration
 Organize your project structure to support the multi policy engine:
@@ -36,30 +36,30 @@ Organize your project structure to support the multi policy engine:
 
 **Example Policy (policies/db.yaml)**
 
-resource_name: production-db-firewall
-rules:
-  - id: web-to-db
-    port: 5432
-    protocol: tcp
+    resource_name: production-db-firewall
+    rules:
+      - id: web-to-db
+        port: 5432
+        protocol: tcp
 
 **live-state.json** (The Simulated Reality)
 
-{
-  "production-db-firewall": {
-    "active_rules": [
-      { "id": "web-to-db", "port": 5432, "protocol": "tcp" },
-      { "id": "unauthorized-access", "port": 9999, "protocol": "tcp" }
-    ]
-  }
-}
+    {
+      "production-db-firewall": {
+        "active_rules": [
+          { "id": "web-to-db", "port": 5432, "protocol": "tcp" },
+          { "id": "unauthorized-access", "port": 9999, "protocol": "tcp" }
+        ]
+      }
+    }
 
 ### 3. Usage
 
 Audit only (Dry Run):
-npx ts-node index.ts
+    npx ts-node index.ts
 
 Audit and Fix (Remediation):
-npx ts-node index.ts --fix
+    npx ts-node index.ts --fix
 
 ## Schema Definition
 All policies must follow this structure:
@@ -76,3 +76,4 @@ All policies must follow this structure:
 * [x] Phase 6: Visual Reporting: Terminal dashboard with tabular data display.
 * [x] Phase 7: Multi Policy Support: Refactored engine to process entire directories.
 * [x] Phase 8: Milestone: Commit stable multi resource engine to version control.
+* [x] Phase 9: Bidirectional Detection: Logic added to find both extra and missing rules.
