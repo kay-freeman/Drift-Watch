@@ -14,7 +14,7 @@ const InfrastructureSchema = z.object({
   rules: z.array(RuleSchema)
 });
 
-function detectDrift() {
+function detectAndRemediate() {
   try {
     // Read Desired State (YAML)
     const yamlFile = fs.readFileSync('./infrastructure.yaml', 'utf8');
@@ -26,20 +26,23 @@ function detectDrift() {
 
     console.log(`--- Monitoring Resource: ${desiredState.resource_name} ---`);
 
-    // Create sets of IDs for quick comparison
     const desiredIds = desiredState.rules.map(r => r.id);
-    const liveIds = liveState.active_rules.map((r: any) => r.id);
 
-    // Find rules in Live State that are NOT in our Desired State (The Drift)
+    // Identify drifting rules
     const driftingRules = liveState.active_rules.filter(
       (liveRule: any) => !desiredIds.includes(liveRule.id)
     );
 
     if (driftingRules.length > 0) {
       console.error("🚨 DRIFT DETECTED!");
+      
+      console.log("\n--- Suggested Remediation ---");
       driftingRules.forEach((rule: any) => {
-        console.error(` > Unauthorized rule found: ${rule.id} on port ${rule.port}`);
+        console.log(`[ACTION REQUIRED] Remove unauthorized rule: ${rule.id}`);
+        // This simulates generating a real CLI command for a cloud provider
+        console.log(`👉 Run command: gcloud compute firewall-rules delete ${rule.id}`);
       });
+      console.log("-----------------------------\n");
     } else {
       console.log("✅ Live state matches policy. No drift detected.");
     }
@@ -49,4 +52,4 @@ function detectDrift() {
   }
 }
 
-detectDrift();
+detectAndRemediate();
