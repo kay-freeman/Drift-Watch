@@ -56,12 +56,15 @@ Organize your project structure to support the multi policy engine:
 ### 3. Usage
 
 Manual Audit (Dry Run):
+
     npx ts-node index.ts
 
 Manual Fix (Remediation):
+
     npx ts-node index.ts --fix
 
 Autopilot Mode (Continuous Monitoring):
+
     ./watch.sh
 
 ## Schema Definition
