@@ -5,6 +5,20 @@ DriftWatch is a configuration auditing tool designed to detect and automatically
 ## Problem Statement
 In production environments, manual changes frequently referred to as hotfixes are often applied directly to resources without being reflected in the version controlled configuration. This leads to configuration drift, making infrastructure difficult to replicate, audit, and secure.
 
+## Interactive Demo
+Experience the full lifecycle of drift detection and remediation without manual configuration. The interactive demo simulates real world "Chaos Engineering" scenarios, including unauthorized changes and policy violations.
+
+To launch the guided experience:
+
+    npm run demo
+
+The demo allows you to:
+* Simulate "Shadow IT" by injecting unauthorized ports.
+* Test "Accidental Deletions" of critical security rules.
+* Trigger "Global Drift" across multiple resources simultaneously.
+* Verify "Schema Enforcement" by attempting to deploy malformed policies.
+* View "Audit Trails" recorded in the SQLite persistence layer.
+
 ## Current Functionality
 * Policy as Code: Infrastructure requirements are defined using standardized YAML syntax.
 * Multi Resource Support: Automatically crawls the policies directory to audit multiple resources simultaneously.
@@ -43,11 +57,7 @@ Organize your project structure to support the multi policy engine:
         port: 5432
         protocol: tcp
 
-### 3. Usage
-
-Interactive Demo (See it in Action):
-
-    npm run demo
+### 3. Manual Usage
 
 Manual Audit (Dry Run):
 
@@ -76,10 +86,10 @@ All policies must follow this structure:
 
 ## Project Roadmap
 
-### Core Engine (In Progress)
+### Core Engine (Completed)
 * ✅ Phase 1: Policy Validation: Ensure YAML configurations are schema compliant.
 * ✅ Phase 2: State Simulation: Created mock data for live environment testing.
-* 🔄 Phase 2.5: Interactive Demo Mode: Create a "one-click" simulation script.
+* ✅ Phase 2.5: Interactive Demo Mode: Create a "one-click" simulation script with scenario selection.
 * ✅ Phase 3: Drift Detection: Logic implemented to flag discrepancies.
 * ✅ Phase 4: Auto Remediation: Support for automated fixes with CLI flag control.
 * ✅ Phase 5: Audit Logging: Persistent tracking of all system actions for compliance.
@@ -96,7 +106,7 @@ All policies must follow this structure:
 * ✅ Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
 * ✅ Phase 13: History CLI: Implemented --history flag for trend analysis.
 * ✅ Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
-* ⬜ Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
+* 🔄 Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
 
 ### Engineering Excellence (Upcoming)
 * ⬜ Phase 16: Unit Testing: Implement Jest tests for the drift detection logic.
