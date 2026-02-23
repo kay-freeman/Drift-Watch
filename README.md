@@ -84,3 +84,4 @@ All policies must follow this structure:
 * [x] Phase 8: Milestone: Commit stable multi resource engine to version control.
 * [x] Phase 9: Bidirectional Detection: Logic added to find both extra and missing rules.
 * [x] Phase 10: Automation Script: Created shell wrapper for continuous interval auditing.
+* [x] Phase 11: Summary Reporting: Added global footer with total issue counts.
