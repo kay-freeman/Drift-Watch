@@ -1,4 +1,5 @@
-node_modules
-package-lock.json
-dist
-.DS_Store
+node_modules/
+dist/
+.env
+*.log
+drift_history.db

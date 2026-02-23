@@ -1,16 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
 import * as yaml from 'js-yaml';
 import { z } from 'zod';
-import Table from 'cli-table3';
+import { Table } from 'console-table-printer';
+import { open, Database } from 'sqlite';
+import sqlite3 from 'sqlite3';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// --- 1. Schemas ---
 const RuleSchema = z.object({
   id: z.string(),
-  port: z.number().min(1).max(65535),
+  port: z.number(),
   protocol: z.enum(['tcp', 'udp', 'icmp']),
 });
 
@@ -19,104 +18,133 @@ const PolicySchema = z.object({
   rules: z.array(RuleSchema),
 });
 
-const liveStatePath = path.join(__dirname, 'live-state.json');
-let liveData = JSON.parse(fs.readFileSync(liveStatePath, 'utf8'));
+type Rule = z.infer<typeof RuleSchema>;
+type Policy = z.infer<typeof PolicySchema>;
 
-const policiesDir = path.join(__dirname, 'policies');
-const auditLogPath = path.join(__dirname, 'audit.log');
-const isFixMode = process.argv.includes('--fix');
+// --- 2. Database Service ---
+class DatabaseService {
+  private db?: Database;
 
-function logAction(message: string) {
-  const timestamp = new Date().toISOString();
-  const entry = `[${timestamp}] ${message}\n`;
-  fs.appendFileSync(auditLogPath, entry);
-}
+  async init() {
+    this.db = await open({
+      filename: './drift_history.db',
+      driver: sqlite3.Database
+    });
 
-function runAudit() {
-  const table = new Table({
-    head: ['Resource', 'Status', 'Drift Details', 'Action'],
-    colWidths: [25, 12, 35, 15]
-  });
-
-  if (!fs.existsSync(policiesDir)) {
-    console.error("Error: 'policies' folder not found.");
-    return;
+    await this.db.exec(`
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp DATETIME DEFAULT (datetime('now','localtime')),
+        resource_name TEXT,
+        status TEXT,
+        drift_details TEXT
+      )
+    `);
   }
 
-  const files = fs.readdirSync(policiesDir).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
-  let driftExists = false;
+  async logAudit(resource: string, status: string, details: string) {
+    if (!this.db) return;
+    await this.db.run(
+      'INSERT INTO audit_logs (resource_name, status, drift_details) VALUES (?, ?, ?)',
+      [resource, status, details]
+    );
+  }
+
+  async getHistory() {
+    if (!this.db) return [];
+    return await this.db.all('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 10');
+  }
+}
+
+// --- 3. Audit Engine ---
+async function run() {
+  const dbService = new DatabaseService();
+  await dbService.init();
+
+  const isFixMode = process.argv.includes('--fix');
+  const isHistoryMode = process.argv.includes('--history');
+
+  // --- History Mode Logic ---
+  if (isHistoryMode) {
+    const history = await dbService.getHistory();
+    const historyTable = new Table({
+      title: 'HISTORICAL AUDIT LOGS (Last 10)',
+      columns: [
+        { name: 'timestamp', title: 'Time', alignment: 'left' },
+        { name: 'resource_name', title: 'Resource', alignment: 'left' },
+        { name: 'status', title: 'Status', alignment: 'left' },
+        { name: 'drift_details', title: 'Details', alignment: 'left' },
+      ],
+    });
+    history.forEach(row => historyTable.addRow(row));
+    historyTable.printTable();
+    process.exit(0);
+  }
+
+  // --- Normal Audit Logic ---
+  const liveState = JSON.parse(fs.readFileSync('live-state.json', 'utf8'));
+  const policyFiles = fs.readdirSync('./policies').filter(f => f.endsWith('.yaml'));
+
+  const table = new Table({
+    columns: [
+      { name: 'Resource', alignment: 'left' },
+      { name: 'Status', alignment: 'left' },
+      { name: 'Drift Details', alignment: 'left' },
+      { name: 'Action', alignment: 'left' },
+    ],
+  });
+
+  let totalResources = 0;
   let totalIssues = 0;
 
-  files.forEach(file => {
+  for (const file of policyFiles) {
+    totalResources++;
+    const rawYaml = fs.readFileSync(path.join('./policies', file), 'utf8');
+    let policy: Policy;
+
     try {
-      const content = fs.readFileSync(path.join(policiesDir, file), 'utf8');
-      const parsedYaml = yaml.load(content);
-      const result = PolicySchema.safeParse(parsedYaml);
-      
-      if (!result.success) {
-        table.push([file, '❌ ERROR', 'Invalid Schema', 'None']);
-        return;
-      }
-
-      const { resource_name: resource, rules: desired } = result.data;
-
-      if (!liveData[resource]) {
-        table.push([resource, '❓ MISSING', 'Not found in live state', 'None']);
-        return;
-      }
-
-      const active = liveData[resource].active_rules;
-
-      const extra = active.filter((live: any) => !desired.some(p => p.id === live.id));
-      const missing = desired.filter((p: any) => !active.some(live => live.id === p.id));
-
-      if (extra.length === 0 && missing.length === 0) {
-        table.push([resource, '✅ OK', 'Matches Policy', 'None']);
-      } else {
-        driftExists = true;
-        totalIssues += (extra.length + missing.length);
-        
-        let details = [];
-        if (extra.length > 0) details.push(`Extra: ${extra.map(r => r.id).join(', ')}`);
-        if (missing.length > 0) details.push(`Missing: ${missing.map(r => r.id).join(', ')}`);
-        
-        const driftDetails = details.join(' | ');
-
-        if (isFixMode) {
-          extra.forEach((r: any) => logAction(`REMEDIATED: Removed ${r.id} from ${resource}`));
-          missing.forEach((r: any) => logAction(`REMEDIATED: Restored missing rule ${r.id} to ${resource}`));
-          liveData[resource].active_rules = [...desired];
-          table.push([resource, '🔧 FIXED', driftDetails, 'SYNCED']);
-        } else {
-          extra.forEach((r: any) => logAction(`DRIFT (EXTRA): ${resource} has unauthorized rule ${r.id}`));
-          missing.forEach((r: any) => logAction(`DRIFT (MISSING): ${resource} is missing rule ${r.id}`));
-          table.push([resource, '⚠️  DRIFT', driftDetails, 'REPORTED']);
-        }
-      }
-
-    } catch (err) {
-      table.push([file, '❌ SYSERR', 'Check console', 'None']);
+      policy = PolicySchema.parse(yaml.load(rawYaml));
+    } catch (e) {
+      table.addRow({ Resource: file, Status: '❌ ERROR', 'Drift Details': 'Invalid Schema', Action: 'None' });
+      await dbService.logAudit(file, 'ERROR', 'Invalid Schema');
+      continue;
     }
-  });
+
+    const resourceName = policy.resource_name;
+    const liveRules = liveState[resourceName]?.active_rules || [];
+
+    const extraRules = liveRules.filter((lr: Rule) => !policy.rules.some(pr => pr.id === lr.id));
+    const missingRules = policy.rules.filter(pr => !liveRules.some((lr: Rule) => lr.id === pr.id));
+
+    if (extraRules.length === 0 && missingRules.length === 0) {
+      table.addRow({ Resource: resourceName, Status: '✅ OK', 'Drift Details': 'Matches Policy', Action: 'None' });
+      await dbService.logAudit(resourceName, 'COMPLIANT', 'None');
+    } else {
+      totalIssues += (extraRules.length + missingRules.length);
+      const driftSummary = [...extraRules.map((r: Rule) => `Extra: ${r.id}`), ...missingRules.map((r: Rule) => `Missing: ${r.id}`)].join(', ');
+      
+      let actionTaken = isFixMode ? 'FIXED' : 'REPORTED';
+      
+      if (isFixMode) {
+        liveState[resourceName].active_rules = policy.rules;
+        fs.writeFileSync('live-state.json', JSON.stringify(liveState, null, 2));
+      }
+
+      table.addRow({ Resource: resourceName, Status: '⚠️ DRIFT', 'Drift Details': driftSummary, Action: actionTaken });
+      await dbService.logAudit(resourceName, 'DRIFT', driftSummary);
+    }
+  }
 
   console.log(`\nDRIFTWATCH AUDIT REPORT - ${new Date().toLocaleString()}`);
   console.log(`MODE: ${isFixMode ? 'REMEDIATION' : 'DRY RUN'}\n`);
-  console.log(table.toString());
+  table.printTable();
 
-  // Summary Footer
-  console.log(`\n------------------------------------------`);
-  console.log(`SUMMARY:`);
-  console.log(`Total Resources Audited: ${files.length}`);
+  console.log('\n------------------------------------------');
+  console.log('SUMMARY:');
+  console.log(`Total Resources Audited: ${totalResources}`);
   console.log(`Total Drift Issues Found: ${totalIssues}`);
-  console.log(`Status: ${totalIssues === 0 ? 'COMPLIANT' : 'NON-COMPLIANT'}`);
-  console.log(`------------------------------------------\n`);
-
-  if (isFixMode && driftExists) {
-    fs.writeFileSync(liveStatePath, JSON.stringify(liveData, null, 2));
-    console.log(`✅ Live state synchronized successfully.\n`);
-  } else if (driftExists) {
-    console.log(`💡 Tip: Use --fix to automatically add/remove rules to match policy.\n`);
-  }
+  console.log(`Status: ${totalIssues > 0 ? 'NON-COMPLIANT' : 'COMPLIANT'}`);
+  console.log('------------------------------------------\n');
 }
 
-runAudit();
+run();
