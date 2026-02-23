@@ -68,16 +68,37 @@ All policies must follow this structure:
 
 ## Project Roadmap
 
+### Core Engine (Completed)
 * [x] Phase 1: Policy Validation: Ensure YAML configurations are schema compliant.
 * [x] Phase 2: State Simulation: Created mock data for live environment testing.
 * [x] Phase 3: Drift Detection: Logic implemented to flag discrepancies.
 * [x] Phase 4: Auto Remediation: Support for automated fixes with CLI flag control.
 * [x] Phase 5: Audit Logging: Persistent tracking of all system actions for compliance.
 * [x] Phase 6: Visual Reporting: Terminal dashboard with tabular data display.
+
+### Advanced Logic (Completed)
 * [x] Phase 7: Multi Policy Support: Refactored engine to process entire directories.
 * [x] Phase 8: Milestone: Commit stable multi resource engine to version control.
 * [x] Phase 9: Bidirectional Detection: Logic added to find both extra and missing rules.
 * [x] Phase 10: Automation Script: Created shell wrapper for continuous interval auditing.
 * [x] Phase 11: Summary Reporting: Added global footer with total issue counts.
+
+### Data & Persistence (In Progress)
 * [x] Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
 * [x] Phase 13: History CLI: Implemented --history flag for trend analysis.
+* [ ] Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
+* [ ] Phase 15: Export Functionality: Support for exporting audit history to CSV or JSON.
+
+### Engineering Excellence (Upcoming)
+* [ ] Phase 16: Unit Testing: Implement Jest tests for the drift detection logic.
+* [ ] Phase 17: Notification System: Integration with Slack webhooks for real time drift alerts.
+* [ ] Phase 18: Security Hardening: Implement CIDR range validation and port range checking.
+* [ ] Phase 19: API Integration: Move from JSON simulation to a real cloud provider API (AWS/Azure).
+* [ ] Phase 20: CI/CD Integration: Add a GitHub Action to run audits on every pull request.
+
+### Production Readiness (Final)
+* [ ] Phase 21: Error Resilience: Implement graceful handling for file system permissions and DB locks.
+* [ ] Phase 22: Containerization: Create a Dockerfile for consistent cross platform execution.
+* [ ] Phase 23: Performance Profiling: Optimize file crawling for environments with 100+ policies.
+* [ ] Phase 24: Interactive CLI: Implement a prompt based wizard for initial policy creation.
+* [ ] Phase 25: Documentation: Generate TypeDoc API documentation for the core engine.
