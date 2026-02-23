@@ -1,21 +1,23 @@
 # DriftWatch
 
-**DriftWatch** is a Site Reliability Engineering (SRE) tool designed to detect "Configuration Drift" in infrastructure. It ensures that the live state of a system matches the defined "Source of Truth" in version control.
+DriftWatch is a configuration auditing tool designed to detect discrepancies between defined infrastructure policies and live environment states. It provides a programmatic way to enforce infrastructure standards and maintain visibility into configuration drift.
 
-## 🚀 The Problem
-In production environments, manual changes (hotfixes) often happen directly on servers or cloud consoles. These changes are rarely back-ported to code, leading to "Drift." This makes infrastructure brittle and prone to security vulnerabilities.
+## Problem Statement
+In production environments, manual changes—often referred to as "hotfixes"—are frequently applied directly to resources without being reflected in the version-controlled configuration. This leads to configuration drift, making infrastructure difficult to replicate, audit, and secure.
 
-## 🛠️ Current Features
-- **Policy as Code:** Infrastructure requirements defined in YAML.
-- **Strict Validation:** Uses `Zod` to ensure data integrity.
-- **Version Control:** Fully tracked via GitHub.
+## Current Functionality
+- Policy as Code: Infrastructure requirements are defined using standardized YAML syntax.
+- Schema Enforcement: Utilizes Zod for strict type validation, ensuring that port configurations and protocols meet defined specifications before processing.
+- Version Control: Integrated with Git to provide a clear audit trail of policy changes.
 
-## 🏗️ Tech Stack
-- **Language:** TypeScript
-- **Validation:** Zod
-- **Config:** YAML
-- **Runtime:** Node.js
+## Technical Stack
+- Language: TypeScript
+- Validation Framework: Zod
+- Configuration Format: YAML
+- Runtime: Node.js
 
-## 🚦 How to Run
-1. Install dependencies: `npm install`
-2. Run the validator: `npx ts-node index.ts`
+## Usage Instructions
+1. Install dependencies:
+   npm install
+2. Execute the validator:
+   npx ts-node index.ts
