@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "timestamp": "2/23/2026, 6:11:14 PM",
+    "policies": 2,
+    "drifts": 3
+  },
+  "details": {
+    "policies": [
+      "infrastructure",
+      "web-server"
+    ],
+    "drifts": [
+      {
+        "resource": "infrastructure",
+        "status": "MISSING",
+        "id": "icmp-echo",
+        "port": 8,
+        "protocol": "icmp"
+      },
+      {
+        "resource": "web-server",
+        "status": "MISSING",
+        "id": "https-in",
+        "port": 443,
+        "protocol": "tcp"
+      },
+      {
+        "resource": "web-server",
+        "status": "EXTRA",
+        "id": "rogue-exploit",
+        "port": 666,
+        "protocol": "tcp"
+      }
+    ]
+  }
+}

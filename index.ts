@@ -45,15 +45,22 @@ async function initDB() {
   return db;
 }
 
-async function updateWebDashboard(policyCount: number, driftCount: number) {
-  const summary = {
-    timestamp: new Date().toLocaleString(),
-    policies: policyCount,
-    drifts: driftCount
-  };
-  const docsDir = path.join(process.cwd(), 'docs');
-  if (!fs.existsSync(docsDir)) fs.mkdirSync(docsDir);
-  fs.writeFileSync(path.join(docsDir, 'summary.json'), JSON.stringify(summary, null, 2));
+// New High-Fidelity Export for the Web Dashboard
+async function exportDetailedAudit(policies: string[], drifts: any[]) {
+    const data = {
+        summary: {
+            timestamp: new Date().toLocaleString(),
+            policies: policies.length,
+            drifts: drifts.length
+        },
+        details: {
+            policies: policies,
+            drifts: drifts
+        }
+    };
+    const docsDir = path.join(process.cwd(), 'docs');
+    if (!fs.existsSync(docsDir)) fs.mkdirSync(docsDir);
+    fs.writeFileSync(path.join(docsDir, 'audit-results.json'), JSON.stringify(data, null, 2));
 }
 
 async function runAudit() {
@@ -82,31 +89,18 @@ async function runAudit() {
     return;
   }
 
-  if (isExportMode) {
-    const data = await db.all('SELECT * FROM audit_logs');
-    if (data.length === 0) {
-        console.log("No data to export.");
-        return;
-    }
-    const parser = new Parser();
-    const csv = parser.parse(data);
-    const fileName = `audit_export_${Date.now()}.csv`;
-    fs.writeFileSync(fileName, csv);
-    console.log(`📊 Exported history to ${fileName}`);
-    return;
-  }
-
   const liveState = JSON.parse(fs.readFileSync('live-state.json', 'utf8'));
   const policyFiles = fs.readdirSync('./policies').filter(f => f.endsWith('.yaml'));
   
   const reportTable = new Table();
-  let totalDrifts = 0;
+  const webDrifts: any[] = [];
+  const webPolicies: string[] = [];
 
   for (const file of policyFiles) {
     const rawYaml = yaml.load(fs.readFileSync(path.join('./policies', file), 'utf8'));
     const policy = PolicySchema.parse(rawYaml);
+    webPolicies.push(policy.resource_name);
     
-    // Safety check: Ensure liveRules is always an array
     const liveRules = Array.isArray(liveState[policy.resource_name]) 
       ? liveState[policy.resource_name] 
       : [];
@@ -114,10 +108,10 @@ async function runAudit() {
     const missing = policy.rules.filter(p => !liveRules.some((l: any) => l.id === p.id));
     const extra = liveRules.filter((l: any) => !policy.rules.some(p => p.id === l.id));
 
-    totalDrifts += (missing.length + extra.length);
-
     for (const rule of missing) {
-      reportTable.addRow({ resource: policy.resource_name, status: 'MISSING', ...rule }, { color: 'red' });
+      const entry = { resource: policy.resource_name, status: 'MISSING', ...rule };
+      reportTable.addRow(entry, { color: 'red' });
+      webDrifts.push(entry);
       await db.run('INSERT INTO audit_logs (resource_name, drift_type, rule_id, port, protocol) VALUES (?, ?, ?, ?, ?)', 
         [policy.resource_name, 'MISSING', rule.id, rule.port, rule.protocol]);
       if (isFixMode) {
@@ -127,7 +121,9 @@ async function runAudit() {
     }
 
     for (const rule of extra) {
-      reportTable.addRow({ resource: policy.resource_name, status: 'EXTRA', ...rule }, { color: 'yellow' });
+      const entry = { resource: policy.resource_name, status: 'EXTRA', ...rule };
+      reportTable.addRow(entry, { color: 'yellow' });
+      webDrifts.push(entry);
       await db.run('INSERT INTO audit_logs (resource_name, drift_type, rule_id, port, protocol) VALUES (?, ?, ?, ?, ?)', 
         [policy.resource_name, 'EXTRA', rule.id, rule.port, rule.protocol]);
       if (isFixMode) {
@@ -136,16 +132,15 @@ async function runAudit() {
     }
   }
 
-  if (totalDrifts > 0 || policyFiles.length > 0) {
+  if (webDrifts.length > 0 || webPolicies.length > 0) {
       reportTable.printTable();
-  } else {
-      console.log("✅ No policies found or environment is clean.");
   }
   
   if (isFixMode) fs.writeFileSync('live-state.json', JSON.stringify(liveState, null, 2));
   
-  await updateWebDashboard(policyFiles.length, totalDrifts);
-  console.log(`\nAudit Complete. ${totalDrifts} issues found. Dashboard updated.`);
+  // Update the detailed web dashboard data
+  await exportDetailedAudit(webPolicies, webDrifts);
+  console.log(`\nAudit Complete. ${webDrifts.length} issues found. Web Dashboard Synced.`);
 }
 
 runAudit().catch(err => console.error('❌ Critical Error:', err.message));
