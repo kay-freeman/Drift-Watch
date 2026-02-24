@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriftWatch | Kay Freeman</title>
+    <title>DriftWatch Dashboard | Kay Freeman</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0d1117; --card-bg: #161b22; --accent: #58a6ff; --text: #c9d1d9; --neon-green: #3fb950; --neon-red: #f85149; }
@@ -18,15 +18,19 @@
         .status-pill { padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; background: var(--neon-green); color: #000; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #30363d; transition: border-color 0.3s; }
-        .card:hover { border-color: var(--accent); }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #30363d; cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
+        .card:hover { border-color: var(--accent); transform: translateY(-3px); background: #1c2128; }
         .card h3 { margin-top: 0; color: #fff; display: flex; align-items: center; gap: 10px; }
         
-        .timestamp { font-size: 0.85rem; color: #8b949e; margin-top: 5px; }
+        /* Terminal Styling */
+        .terminal-container { margin-top: 30px; background: #000; border-radius: 8px; border: 1px solid #30363d; display: none; overflow: hidden; }
+        .terminal-header { background: #21262d; padding: 8px 15px; font-size: 0.75rem; color: #8b949e; display: flex; justify-content: space-between; }
+        #terminal-body { padding: 20px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.85rem; color: #d1d5da; min-height: 150px; white-space: pre-wrap; }
+        
+        .btn { background: var(--accent); color: #000; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; border: none; cursor: pointer; font-size: 1rem; }
+        .btn:hover { opacity: 0.9; }
         
         footer { text-align: center; margin-top: 60px; padding: 30px; border-top: 1px solid #30363d; color: #8b949e; font-size: 0.9rem; }
-        .license-badge { border: 1px solid #8b949e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-left: 10px; }
-        .btn { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -34,51 +38,57 @@
         <header>
             <div class="author-tag">Lead Engineer: Kay Freeman</div>
             <h1>DriftWatch</h1>
-            <p>Automated Infrastructure Compliance & Remediation</p>
-            <a href="https://github.com/kay-freeman/drift-watch" class="btn"><i class="fab fa-github"></i> Source Code</a>
+            <p>Infrastructure Compliance & Drift Remediation Engine</p>
+            <button class="btn" onclick="startDemo()"><i class="fas fa-play"></i> Run Visual Audit Demo</button>
         </header>
 
         <div class="status-bar">
             <div>
                 <h3 style="margin:0; color:#fff;">Live System Health</h3>
-                <div class="timestamp" id="last-updated">Last Audit: Loading from local data...</div>
+                <div id="last-updated" style="font-size: 0.85rem; color: #8b949e;">Last Audit: Fetching results...</div>
             </div>
-            <div id="status-display" class="status-pill">Awaiting Update</div>
+            <div id="status-pill" class="status-pill">Loading...</div>
         </div>
 
         <div class="grid">
-            <div class="card">
-                <h3><i class="fas fa-shield-check" style="color: var(--neon-green)"></i> Active Policies</h3>
-                <p id="policy-count">--</p>
-                <small>Total infrastructure definitions currently enforced.</small>
+            <div class="card" onclick="startDemo()">
+                <h3><i class="fas fa-shield-halved" style="color: var(--neon-green)"></i> Active Policies</h3>
+                <h2 id="policy-count" style="margin: 10px 0;">--</h2>
+                <small style="color: #8b949e;">Total definitions currently enforced. Click to scan.</small>
             </div>
-            <div class="card">
-                <h3><i class="fas fa-microscope" style="color: var(--accent)"></i> Open Drift</h3>
-                <p id="drift-count">--</p>
-                <small>Discrepancies found during the most recent audit cycle.</small>
+            <div class="card" onclick="startDemo()">
+                <h3><i class="fas fa-triangle-exclamation" style="color: var(--neon-red)"></i> Open Drift</h3>
+                <h2 id="drift-count" style="margin: 10px 0;">--</h2>
+                <small style="color: #8b949e;">Discrepancies found. Click for breakdown.</small>
             </div>
+        </div>
+
+        <div class="terminal-container" id="terminal-view">
+            <div class="terminal-header">
+                <span>driftwatch --audit --verbose</span>
+                <span>bash</span>
+            </div>
+            <div id="terminal-body"></div>
         </div>
         
         <footer>
-            &copy; 2026 <strong>Kay Freeman</strong> 
-            <span class="license-badge">MIT License</span>
-            <p style="margin-top:10px;">Built with TypeScript, Node.js, and SQLite</p>
+            &copy; 2026 <strong>Kay Freeman</strong> | MIT License
+            <p style="margin-top:10px; font-size: 0.8rem;">Powered by TypeScript & Node.js</p>
         </footer>
     </div>
 
     <script>
-        async function loadStatus() {
+        // 1. Fetch real data from your local run
+        async function init() {
             try {
-                // This fetches the summary.json generated by your CLI tool
-                const response = await fetch('./summary.json');
-                const data = await response.json();
-                
+                const res = await fetch('./summary.json');
+                const data = await res.json();
+                document.getElementById('policy-count').innerText = data.policies;
+                document.getElementById('drift-count').innerText = data.drifts;
                 document.getElementById('last-updated').innerText = `Last Audit: ${data.timestamp}`;
-                document.getElementById('policy-count').innerText = `${data.policies} Policy Files`;
-                document.getElementById('drift-count').innerText = `${data.drifts} Issues Detected`;
                 
-                const pill = document.getElementById('status-display');
-                if (data.drifts > 0) {
+                const pill = document.getElementById('status-pill');
+                if(data.drifts > 0) {
                     pill.innerText = 'Drift Detected';
                     pill.style.background = 'var(--neon-red)';
                 } else {
@@ -86,12 +96,42 @@
                     pill.style.background = 'var(--neon-green)';
                 }
             } catch (e) {
-                document.getElementById('last-updated').innerText = "Run CLI to sync live dashboard data.";
-                document.getElementById('status-display').innerText = "Offline";
-                document.getElementById('status-display').style.background = "#484f58";
+                document.getElementById('status-pill').innerText = 'Offline';
+                document.getElementById('last-updated').innerText = 'Connect local summary.json to sync.';
             }
         }
-        loadStatus();
+
+        // 2. The Simulation Engine
+        const logs = [
+            { text: "Initializing DriftWatch Engine...", color: "#58a6ff" },
+            { text: "Loading YAML policies from /policies...", color: "#d1d5da" },
+            { text: "Comparing Desired State vs. Live Environment...", color: "#d1d5da" },
+            { text: "⚠️ DRIFT DETECTED: Resource 'web-server' has unauthorized port 666 (tcp)", color: "#f85149" },
+            { text: "⚠️ DRIFT DETECTED: Resource 'infrastructure' missing required port 8 (icmp)", color: "#f85149" },
+            { text: "Audit complete. Writing to SQLite history...", color: "#3fb950" },
+            { text: "Summary: 2 Policies Scanned | 3 Drifts Found", color: "#fff", bold: true }
+        ];
+
+        function startDemo() {
+            const view = document.getElementById('terminal-view');
+            const body = document.getElementById('terminal-body');
+            view.style.display = 'block';
+            body.innerHTML = '';
+            
+            logs.forEach((log, i) => {
+                setTimeout(() => {
+                    const line = document.createElement('div');
+                    line.style.color = log.color;
+                    if(log.bold) line.style.fontWeight = 'bold';
+                    line.style.marginBottom = '5px';
+                    line.innerHTML = `> ${log.text}`;
+                    body.appendChild(line);
+                    view.scrollTop = view.scrollHeight;
+                }, i * 600);
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
