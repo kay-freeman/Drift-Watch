@@ -58,7 +58,7 @@ Export Audit History (CSV):
 
     npm run export
 
-Run Unit Tests:
+Run Automated Unit Tests:
 
     npm test
 
