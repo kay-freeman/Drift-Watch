@@ -6,18 +6,11 @@ DriftWatch is a configuration auditing tool designed to detect and automatically
 In production environments, manual changes frequently referred to as hotfixes are often applied directly to resources without being reflected in the version controlled configuration. This leads to configuration drift, making infrastructure difficult to replicate, audit, and secure.
 
 ## Interactive Demo
-Experience the full lifecycle of drift detection and remediation without manual configuration. The interactive demo simulates real world "Chaos Engineering" scenarios, including unauthorized changes and policy violations.
+Experience the full lifecycle of drift detection and remediation without manual configuration. The interactive demo simulates real world Chaos Engineering scenarios, including unauthorized changes and policy violations.
 
 To launch the guided experience:
 
     npm run demo
-
-The demo allows you to:
-* Simulate "Shadow IT" by injecting unauthorized ports.
-* Test "Accidental Deletions" of critical security rules.
-* Trigger "Global Drift" across multiple resources simultaneously.
-* Verify "Schema Enforcement" by attempting to deploy malformed policies.
-* View "Audit Trails" recorded in the SQLite persistence layer.
 
 ## Current Functionality
 * Policy as Code: Infrastructure requirements are defined using standardized YAML syntax.
@@ -29,6 +22,8 @@ The demo allows you to:
 * Historical Logging: Persistent SQLite database storage for long term compliance tracking.
 * Audit History: Dedicated --history flag to view past audit performance and trends.
 * CSV Export: Automated reporting via --export flag to generate timestamped CSV audit logs.
+* Live Web Dashboard: GitHub Pages integration showing real-time system health.
+* Unit Testing: Automated logic verification via Jest for engineering reliability.
 
 ## Technical Stack
 * Language: TypeScript
@@ -45,85 +40,58 @@ Install the necessary dependencies to handle YAML parsing, database operations, 
 
     npm install
 
-### 2. Setup Configuration
-Organize your project structure to support the multi policy engine:
-
-1. Create a policies directory in your root folder.
-2. Place your YAML policy files inside that folder (e.g., policies/db.yaml).
-
-**Example Policy (policies/db.yaml)**
-
-    resource_name: production-db-firewall
-    rules:
-      - id: web-to-db
-        port: 5432
-        protocol: tcp
-
-### 3. Manual Usage
+### 2. Manual Usage
 
 Manual Audit (Dry Run):
 
-    npx ts-node index.ts
+    npm start
 
 Manual Fix (Remediation):
 
-    npx ts-node index.ts --fix
+    npm start -- --fix
 
 View Audit History (Database Logs):
 
-    npx ts-node index.ts --history
+    npm run history
 
 Export Audit History (CSV):
 
-    npx ts-node index.ts --export
+    npm run export
 
-Clear Audit History:
+Run Unit Tests:
 
-    npx ts-node index.ts --clear
-
-Autopilot Mode (Continuous Monitoring):
-
-    ./watch.sh
-
-## Schema Definition
-All policies must follow this structure:
-* resource_name: Unique identifier (matches live-state.json keys).
-* rules: List of objects containing id, port, and protocol (tcp, udp, or icmp).
+    npm test
 
 ## Project Roadmap
 
 ### Core Engine (Completed)
-* ✅ Phase 1: Policy Validation: Ensure YAML configurations are schema compliant.
-* ✅ Phase 2: State Simulation: Created mock data for live environment testing.
-* ✅ Phase 2.5: Interactive Demo Mode: Create a "one-click" simulation script with scenario selection.
-* ✅ Phase 3: Drift Detection: Logic implemented to flag discrepancies.
-* ✅ Phase 4: Auto Remediation: Support for automated fixes with CLI flag control.
-* ✅ Phase 5: Audit Logging: Persistent tracking of all system actions for compliance.
-* ✅ Phase 6: Visual Reporting: Terminal dashboard with tabular data display.
+* 🔵 Phase 1: Policy Validation: Ensure YAML configurations are schema compliant.
+* 🔵 Phase 2: State Simulation: Created mock data for live environment testing.
+* 🔵 Phase 3: Drift Detection: Logic implemented to flag discrepancies.
+* 🔵 Phase 4: Auto Remediation: Support for automated fixes with CLI flag control.
+* 🔵 Phase 5: Audit Logging: Persistent tracking of all system actions for compliance.
+* 🔵 Phase 6: Visual Reporting: Terminal dashboard with tabular data display.
 
 ### Advanced Logic (Completed)
-* ✅ Phase 7: Multi Policy Support: Refactored engine to process entire directories.
-* ✅ Phase 8: Milestone: Commit stable multi resource engine to version control.
-* ✅ Phase 9: Bidirectional Detection: Logic added to find both extra and missing rules.
-* ✅ Phase 10: Automation Script: Created shell wrapper for continuous interval auditing.
-* ✅ Phase 11: Summary Reporting: Added global footer with total issue counts.
+* 🔵 Phase 7: Multi Policy Support: Refactored engine to process entire directories.
+* 🔵 Phase 8: Milestone: Commit stable multi resource engine to version control.
+* 🔵 Phase 9: Bidirectional Detection: Logic added to find both extra and missing rules.
+* 🔵 Phase 10: Automation Script: Created shell wrapper for continuous interval auditing.
+* 🔵 Phase 11: Summary Reporting: Added global footer with total issue counts.
 
 ### Data & Persistence (Completed)
-* ✅ Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
-* ✅ Phase 13: History CLI: Implemented --history flag for trend analysis.
-* ✅ Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
-* ✅ Phase 15: Export Functionality: Support for exporting audit history to CSV via --export.
+* 🔵 Phase 12: Persistence Layer: Migrated logs to a structured SQLite database.
+* 🔵 Phase 13: History CLI: Implemented --history flag for trend analysis.
+* 🔵 Phase 14: Database Maintenance: Add a --clear flag to prune old audit logs.
+* 🔵 Phase 15: Export Functionality: Support for exporting audit history to CSV via --export.
 
-### Engineering Excellence (Upcoming)
-* ⬜ Phase 16: Unit Testing: Implement Jest tests for the drift detection logic.
-* ⬜ Phase 17: Notification System: Integration with Slack webhooks for real time drift alerts.
-* ⬜ Phase 18: Security Hardening: Implement CIDR range validation and port range checking.
-* ⬜ Phase 19: API Integration: Move from JSON simulation to a real cloud provider API (AWS/Azure).
-* ⬜ Phase 20: CI/CD Integration: Add a GitHub Action to run audits on every pull request.
+### Engineering Excellence (Ongoing)
+* 🔵 Phase 16: Unit Testing & Web Dashboard: Implement Jest tests and GitHub Pages sync.
+* ⚪ Phase 17: Notification System: Integration with Slack webhooks for real time drift alerts.
+* ⚪ Phase 18: Security Hardening: Implement CIDR range validation and port range checking.
+* ⚪ Phase 19: API Integration: Move from JSON simulation to a real cloud provider API.
+* ⚪ Phase 20: CI/CD Integration: Add a GitHub Action to run audits on every pull request.
 
-### Production Readiness (Final)
-* ⬜ Phase 21: Error Resilience: Implement graceful handling for file system permissions and DB locks.
-* ⬜ Phase 22: Containerization: Create a Dockerfile for consistent cross platform execution.
-* ⬜ Phase 23: Performance Profiling: Optimize file crawling for environments with 100+ policies.
-* ⬜ Phase 24: Interactive CLI: Implement a prompt based wizard for initial policy creation.
-* ⬜ Phase 25: Documentation: Generate TypeDoc API documentation for the core engine.
+---
+Author: Kay Freeman
+License: MIT
