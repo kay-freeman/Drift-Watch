@@ -3,3 +3,4 @@ dist/
 .env
 *.log
 drift_history.db
+echo ".env" > .gitignore

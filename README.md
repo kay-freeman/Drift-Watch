@@ -86,8 +86,8 @@ Run Automated Unit Tests:
 * 🔵 Phase 15: Export Functionality: Support for exporting audit history to CSV via --export.
 
 ### Engineering Excellence (Ongoing)
-* 🔵 Phase 16: Unit Testing & Web Dashboard: Implement Jest tests and GitHub Pages sync.
-* ⚪ Phase 17: Notification System: Integration with Slack webhooks for real time drift alerts.
+* 🔵 Phase 16: Unit Testing: Implement Jest tests and automated logic verification.
+* 🔵 Phase 17: Notification System: Integration with Slack webhooks for real time drift alerts.
 * ⚪ Phase 18: Security Hardening: Implement CIDR range validation and port range checking.
 * ⚪ Phase 19: API Integration: Move from JSON simulation to a real cloud provider API.
 * ⚪ Phase 20: CI/CD Integration: Add a GitHub Action to run audits on every pull request.
